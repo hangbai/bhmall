@@ -1,12 +1,12 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <router-view/>
+    <bottom-navigation/>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import BottomNavigation from "@/components/BottomNavigation";
 
 export default {
   name: 'App',
