@@ -45,4 +45,8 @@ export default {
 .v-btn:not(.v-btn--round).v-size--default {
   height: 49px;
 }
+
+.v-item-group.v-bottom-navigation .v-btn{
+  max-width: 400px;
+}
 </style>

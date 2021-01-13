@@ -46,61 +46,50 @@
       </v-container>
 
       <!--      tabs-->
-      <v-tabs
-          height="40px"
-          fixed-tabs
-          color="pink lighten-3"
-      >
-        <v-tab>
-          流行
-        </v-tab>
-        <v-tab>
-          新款
-        </v-tab>
-        <v-tab>
-          精选
-        </v-tab>
+      <v-tabs v-model="tab" height="40px" fixed-tabs color="pink lighten-3">
+        <v-tab v-for="item in tabs" :key="item.tab" @click="tabChange(item.type)">{{ item.tab }}</v-tab>
       </v-tabs>
+      <v-tabs-items v-model="tab">
+        <v-tab-item v-for="item in tabs" :key="item.tab">
+          <detail-item :detail="details[item.type].list"/>
+        </v-tab-item>
+      </v-tabs-items>
 
-      <!--      detail-->
-      <v-container fluid class="detail">
-        <v-row dense>
-          <v-col v-for="(item, index) in detail" :key="index" cols="6">
-            <v-card elevation="0">
-              <v-img :src="item.show.img"></v-img>
-              <v-row class="row-detail">
-                <v-card-text class='text-detail' v-text="item.props[0]"></v-card-text>
-              </v-row>
-              <v-row class="row-detail">
-                <v-card-text class='price-detail'>
-                  ￥{{item.price}}
-                  <v-icon class="icon-detail">mdi-star</v-icon>
-                  {{ item.cfav }}
-                </v-card-text>
-              </v-row>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+      <!--      上拉加载-->
+      <v-snackbar v-model="snackbar" timeout="1000" outlined color="#F48FB1" width="100px">
+        <div class="snack">
+          上拉加载更多
+        </div>
+      </v-snackbar>
 
     </v-main>
-
   </div>
 </template>
 
 <script>
+import DetailItem from "@/components/DetailItem";
 import {getHomeData, getDetailData} from "@/network/home";
 
 export default {
   name: 'Home',
   data() {
     return {
+      tab: null,
       banner: [],
       recommend: [],
-      detail:[]
+      tabs: [{tab: '流行', type: 'pop'}, {tab: '新款', type: 'new'}, {tab: '精选', type: 'sell'}],
+      details: {
+        'pop': {page: 1, list: []},
+        'new': {page: 1, list: []},
+        'sell': {page: 1, list: []},
+      },
+      type:'pop',
+      snackbar: false,
     }
   },
-  components: {},
+  components: {
+    DetailItem
+  },
   computed: {
     bannerHeight() {
       // 获取屏幕宽度 然后计算轮播图的显示高度
@@ -109,7 +98,12 @@ export default {
   },
   created() {
     this.getHomeData()
-    this.getDetailData('pop',1)
+    this.getDetailData('pop')
+    this.getDetailData('new')
+    this.getDetailData('sell')
+  },
+  mounted() {
+    window.addEventListener('scroll', this.loadMore, true);
   },
   methods: {
     getHomeData() {
@@ -122,12 +116,37 @@ export default {
         // console.log(this.recommend)
       })
     },
-    getDetailData(type,page){
-      getDetailData(type,page).then(res=>{
-        console.log(res)
+
+    getDetailData(type) {
+
+      getDetailData(type, this.details[type].page).then(res => {
+        // console.log(res)
         this.detail = res.data.data.list
-        console.log(this.detail)
+        this.details[type].list.push(...this.detail)
+        this.details[type].page += 1
+        console.log(this.details)
       })
+    },
+
+    tabChange(type){
+      this.type = type
+    },
+
+    loadMore() {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        // let clientHeight = document.documentElement.clientHeight; //document.documentElement获取数据
+        let clientHeight = screen.height
+        let scrollTop = document.documentElement.scrollTop; //document.documentElement获取数据
+        let scrollHeight = document.documentElement.scrollHeight;//document.documentElement获取数据
+        // console.log(clientHeight,scrollTop,scrollHeight)
+        if (clientHeight + scrollTop +1 >= scrollHeight && scrollHeight > clientHeight * 2) {
+          console.log('上拉加载')
+          this.snackbar = true
+          this.getDetailData(this.type)
+
+        }
+      }, 15)
     }
   }
 }
@@ -139,7 +158,7 @@ export default {
   font-size: 16px;
 }
 
-.text-recommend{
+.text-recommend {
   padding: 4px;
   text-align: center;
 }
@@ -148,28 +167,9 @@ export default {
   padding: 8px 8px 28px;
   border-bottom: 10px solid #eee;
 }
-.text-detail{
-  font-size: 12px;
-  padding: 4px 4px 0px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+.snack {
+  text-align: center;
 }
 
-.row-detail{
-  margin: 0;
-  height: 18px;
-}
-
-
-.price-detail{
-  font-size: 10px;
-  padding: 0px;
-  color: #F48FB1;
-}
-
-.icon-detail{
-  font-size: 15px;
-  color: #F48FB1;
-}
 </style>
