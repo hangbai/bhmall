@@ -55,19 +55,15 @@
         </v-tab-item>
       </v-tabs-items>
 
-      <!--      上拉加载-->
-      <v-snackbar v-model="snackbar" timeout="1000" outlined color="#F48FB1" width="100px">
-        <div class="snack">
-          上拉加载更多
-        </div>
-      </v-snackbar>
-
+      <!--      loading-->
+      <loading v-show="snackbar"></loading>
     </v-main>
   </div>
 </template>
 
 <script>
 import DetailItem from "@/components/DetailItem";
+import Loading from "@/components/Loading";
 import {getHomeData, getDetailData} from "@/network/home";
 
 export default {
@@ -75,6 +71,7 @@ export default {
   data() {
     return {
       tab: null,
+      bannerHeight:0,
       banner: [],
       recommend: [],
       tabs: [{tab: '流行', type: 'pop'}, {tab: '新款', type: 'new'}, {tab: '精选', type: 'sell'}],
@@ -88,13 +85,14 @@ export default {
     }
   },
   components: {
+    Loading,
     DetailItem
   },
   computed: {
-    bannerHeight() {
-      // 获取屏幕宽度 然后计算轮播图的显示高度
-      return document.body.clientWidth * 375 / 720
-    }
+    // bannerHeight() {
+    //   // 获取屏幕宽度 然后计算轮播图的显示高度
+    //   return document.body.clientWidth * 375 / 720
+    // }
   },
   created() {
     this.getHomeData()
@@ -118,13 +116,12 @@ export default {
     },
 
     getDetailData(type) {
-
       getDetailData(type, this.details[type].page).then(res => {
         // console.log(res)
         this.detail = res.data.data.list
         this.details[type].list.push(...this.detail)
         this.details[type].page += 1
-        console.log(this.details)
+        // console.log(this.details)
       })
     },
 
@@ -135,16 +132,18 @@ export default {
     loadMore() {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
+        this.bannerHeight = document.body.clientWidth * 375 / 720
         // let clientHeight = document.documentElement.clientHeight; //document.documentElement获取数据
         let clientHeight = screen.height
         let scrollTop = document.documentElement.scrollTop; //document.documentElement获取数据
         let scrollHeight = document.documentElement.scrollHeight;//document.documentElement获取数据
         // console.log(clientHeight,scrollTop,scrollHeight)
         if (clientHeight + scrollTop +1 >= scrollHeight && scrollHeight > clientHeight * 2) {
-          console.log('上拉加载')
-          this.snackbar = true
-          this.getDetailData(this.type)
-
+          setTimeout(()=>{
+            // console.log('上拉加载')
+            this.snackbar = true
+            this.getDetailData(this.type)
+          },500)
         }
       }, 15)
     }
@@ -166,10 +165,6 @@ export default {
 .recommend {
   padding: 8px 8px 28px;
   border-bottom: 10px solid #eee;
-}
-
-.snack {
-  text-align: center;
 }
 
 </style>

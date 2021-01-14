@@ -3,7 +3,25 @@
     <v-row dense>
       <v-col class="col-detail" v-for="(item, index) in detail" :key="index" cols="6">
         <v-card class="card-detail" elevation="0">
-          <v-img :src="item.show.img"></v-img>
+<!--          <v-img :src="defaultImage" v-show="imageLoadTest[index]"></v-img>-->
+          <v-img
+              :src="item.show.img"
+              :lazy-src="defaultImage"
+              >
+            <template v-slot:placeholder>
+              <v-row
+                  class="fill-height ma-0"
+                  align="center"
+                  justify="center"
+              >
+                <v-progress-circular
+                    indeterminate
+                    color="grey lighten-5"
+                ></v-progress-circular>
+              </v-row>
+            </template>
+          </v-img>
+
         </v-card>
         <div class="info-detail">
           <v-row class="row-detail">
@@ -25,12 +43,25 @@
 <script>
 export default {
   name: "DetailItem",
+  data(){
+    return{
+      defaultImage:require('@/assets/img/common/placeholder.png'),
+      imageLoadTest:{},
+      // default_cattle: 'this.src="' + require('@/assets/img/common/placeholder.png') + '"'
+    }
+  },
   props:{
     detail:{
       type:Array,
       default(){
         return []
       }
+    }
+  },
+  methods:{
+    imageLoad(image){
+      setTimeout(()=>{this.defaultImage = image},500)
+
     }
   }
 }
@@ -55,7 +86,8 @@ export default {
 
 .text-detail{
   font-size: 12px;
-  padding: 4px 4px 0px;
+  line-height: 12px;
+  padding:4px 0px 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -63,7 +95,7 @@ export default {
 
 .row-detail{
   margin: 0;
-  height: 18px;
+  height: 16px;
 }
 
 
@@ -80,4 +112,5 @@ export default {
   padding-left: 10px;
   padding-bottom: 2px;
 }
+
 </style>
