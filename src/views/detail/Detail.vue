@@ -1,44 +1,49 @@
 <template>
   <div id="detail">
-    <v-app-bar
-        app
-        height="44px"
-        flat
-    >
-      <span></span>
-      <v-tabs
-          v-model="tab"
-          next-icon="mdi-arrow-up"
-          prev-icon="mdi-arrow-up"
-          slider-size="0"
-          color="pink lighten-3">
-        <v-tab v-for="(item,index) in tabs" :key="index">{{ item }}</v-tab></v-tabs>
-      <span></span>
-    </v-app-bar>
+    <!--    detail-nav-bar-->
+    <detail-nav-bar></detail-nav-bar>
 
-    Detail{{ this.$route.query }}
+    <v-main>
+      <!--      detail-carousel-->
+      <detail-carousel :topImages="topImages"></detail-carousel>
+
+<!--      detail-good-->
+      <detail-good></detail-good>
+
+      Detail{{ this.$route.query }}
+    </v-main>
   </div>
 </template>
 
 <script>
+import DetailNavBar from "@/views/detail/components/DetailNavBar";
+import DetailCarousel from "@/views/detail/components/DetailCarousel";
+import DetailGood from "@/views/detail/components/DetailGood";
 import {getDetail} from "@/network/database";
 
 export default {
   name: "Detail",
-  data(){
-    return{
-      tab:null,
-      tabs:['商品', '参数', '评论', '推荐'],
-      infos:[]
+  components: {
+    DetailNavBar,
+    DetailCarousel,
+    DetailGood
+  },
+  data() {
+    return {
+      topImages:[]
     }
   },
   created() {
     this.getDetail()
   },
-  methods:{
-    getDetail(){
-      getDetail(this.$route.query.iid).then(res=>{
+  methods: {
+    getDetail() {
+      getDetail(this.$route.query.iid).then(res => {
         console.log(res)
+        // get carousel images
+        this.topImages=res.data.result.itemInfo.topImages
+
+        // console.log(this.topImages)
       })
     }
   }
