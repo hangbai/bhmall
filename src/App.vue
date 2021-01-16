@@ -1,6 +1,8 @@
 <template>
   <v-app>
-    <router-view/>
+    <keep-alive>
+      <router-view/>
+    </keep-alive>
     <bottom-navigation/>
   </v-app>
 </template>

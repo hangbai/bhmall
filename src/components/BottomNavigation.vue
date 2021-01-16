@@ -1,25 +1,13 @@
 <template>
   <v-bottom-navigation
       height="49px"
-      :value="value"
+      :value="0"
       color="pink lighten-3"
       grow
       app>
-    <v-btn>
-      <span>主页</span>
-      <v-icon>mdi-home</v-icon>
-    </v-btn>
-    <v-btn>
-      <span>分类</span>
-      <v-icon>mdi-border-all</v-icon>
-    </v-btn>
-    <v-btn>
-      <span>购物车</span>
-      <v-icon>mdi-cart</v-icon>
-    </v-btn>
-    <v-btn>
-      <span>我的</span>
-      <v-icon>mdi-account</v-icon>
+    <v-btn v-for="(item,index) in items" :key="index" @click="btmClick(item.path)">
+      <span>{{ item.name }}</span>
+      <v-icon>{{item.icon}}</v-icon>
     </v-btn>
   </v-bottom-navigation>
 </template>
@@ -27,9 +15,21 @@
 <script>
 export default {
   name: 'BottomNavigation',
-  data: () => ({ value: 0 }),
-  computed: {
+  data(){
+    return{
+      items:[
+        {name:'主页',path:'/',icon:'mdi-home'},
+        {name:'分类',path:'/category',icon:'mdi-border-all'},
+        {name:'购物车',path:'/shopping',icon:'mdi-cart'},
+        {name:'我的',path:'/profile',icon:'mdi-account'},
+      ]
+    }
   },
+  methods:{
+    btmClick(path){
+      this.$router.push(path)
+    },
+  }
 }
 </script>
 

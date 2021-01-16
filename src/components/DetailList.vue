@@ -1,13 +1,17 @@
 <template>
   <v-container fluid class="detail">
     <v-row dense>
-      <v-col class="col-detail" v-for="(item, index) in detail" :key="index" cols="6">
+      <v-col
+          class="col-detail"
+          v-for="(item, index) in detail"
+          :key="index"
+          cols="6"
+          @click="itemClick(item.iid)">
         <v-card class="card-detail" elevation="0">
-<!--          <v-img :src="defaultImage" v-show="imageLoadTest[index]"></v-img>-->
           <v-img
               :src="item.show.img"
               :lazy-src="defaultImage"
-              >
+          >
             <template v-slot:placeholder>
               <v-row
                   class="fill-height ma-0"
@@ -21,7 +25,6 @@
               </v-row>
             </template>
           </v-img>
-
         </v-card>
         <div class="info-detail">
           <v-row class="row-detail">
@@ -43,70 +46,68 @@
 <script>
 export default {
   name: "DetailItem",
-  data(){
-    return{
-      defaultImage:require('@/assets/img/common/placeholder.png'),
-      imageLoadTest:{},
-      // default_cattle: 'this.src="' + require('@/assets/img/common/placeholder.png') + '"'
+  data() {
+    return {
+      defaultImage: require('@/assets/img/common/placeholder.png')
     }
   },
-  props:{
-    detail:{
-      type:Array,
-      default(){
+  props: {
+    detail: {
+      type: Array,
+      default() {
         return []
       }
     }
   },
-  methods:{
-    imageLoad(image){
-      setTimeout(()=>{this.defaultImage = image},500)
-
+  methods: {
+    itemClick(iid) {
+      console.log(iid)
+      this.$router.push({path: '/detail', query: {iid}})
     }
   }
 }
 </script>
 
 <style scoped>
-.col-detail{
+.col-detail {
   position: relative;
-  overflow:hidden;
+  overflow: hidden;
 }
 
-.card-detail{
+.card-detail {
   padding-top: 5px;
   padding-bottom: 30px;
 }
 
-.info-detail{
+.info-detail {
   position: absolute;
   bottom: 0px;
   width: 100%;
 }
 
-.text-detail{
+.text-detail {
   font-size: 12px;
   line-height: 12px;
-  padding:4px 0px 4px;
+  padding: 4px 0px 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.row-detail{
+.row-detail {
   margin: 0;
   height: 16px;
 }
 
 
-.price-detail{
+.price-detail {
   font-size: 11px;
   padding: 0px;
   color: #F48FB1;
   text-align: center;
 }
 
-.icon-detail{
+.icon-detail {
   font-size: 13px;
   color: #F48FB1;
   padding-left: 10px;

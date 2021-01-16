@@ -46,32 +46,47 @@
       </v-container>
 
       <!--      tabs-->
-      <v-tabs v-model="tab" height="40px" fixed-tabs color="pink lighten-3">
+      <v-tabs
+          class="tab-fix"
+          v-show="tabFixShow"
+          v-model="tab"
+          height="40px"
+          fixed-tabs
+          color="pink lighten-3">
+        <v-tab v-for="item in tabs" :key="item.tab" @click="tabChange(item.type)">{{ item.tab }}</v-tab>
+      </v-tabs>
+      <v-tabs v-model="tab" height="40px" fixed-tabs color="pink lighten-3" class='Pop-Over' ref="tabPos">
         <v-tab v-for="item in tabs" :key="item.tab" @click="tabChange(item.type)">{{ item.tab }}</v-tab>
       </v-tabs>
       <v-tabs-items v-model="tab">
         <v-tab-item v-for="item in tabs" :key="item.tab">
-          <detail-item :detail="details[item.type].list"/>
+          <detail-list :detail="details[item.type].list"/>
         </v-tab-item>
       </v-tabs-items>
 
       <!--      loading-->
-      <loading v-show="snackbar"></loading>
+      <loading v-show="loading"></loading>
+
+      <!--      backtop-->
+      <back-top :backTopShow="backTopShow"></back-top>
     </v-main>
   </div>
 </template>
 
 <script>
-import DetailItem from "@/components/DetailItem";
+import DetailList from "@/components/DetailList";
 import Loading from "@/components/Loading";
-import {getHomeData, getDetailData} from "@/network/home";
+import BackTop from "@/components/BackTop";
+import {getHomeData, getDetailData} from "@/network/database";
 
 export default {
   name: 'Home',
   data() {
     return {
       tab: null,
-      bannerHeight:0,
+      type: 'pop',
+      bannerHeight: 0,
+      tabPosition: 0,
       banner: [],
       recommend: [],
       tabs: [{tab: '流行', type: 'pop'}, {tab: '新款', type: 'new'}, {tab: '精选', type: 'sell'}],
@@ -80,73 +95,84 @@ export default {
         'new': {page: 1, list: []},
         'sell': {page: 1, list: []},
       },
-      type:'pop',
-      snackbar: false,
+      loading: false,
+      backTopShow: false,
+      tabFixShow: false,
+      scrollTop:0,
+      reservedTop:0
     }
   },
   components: {
     Loading,
-    DetailItem
-  },
-  computed: {
-    // bannerHeight() {
-    //   // 获取屏幕宽度 然后计算轮播图的显示高度
-    //   return document.body.clientWidth * 375 / 720
-    // }
+    DetailList,
+    BackTop
   },
   created() {
+    // console.log('created')
     this.getHomeData()
     this.getDetailData('pop')
     this.getDetailData('new')
     this.getDetailData('sell')
   },
+  destroyed() {
+    // console.log('destroyed')
+  },
+  activated() {
+    // console.log('activated',this.reservedTop)
+    window.scrollTo({
+      top: this.reservedTop,
+      left: 0,
+    })
+  },
+  deactivated() {
+    this.reservedTop = this.scrollTop
+    // console.log('deactivated',this.scrollTop)
+  },
   mounted() {
-    window.addEventListener('scroll', this.loadMore, true);
+    this.bannerHeight = document.body.clientWidth * 375 / 720
+    window.addEventListener('scroll', this.getScroll, true);
   },
   methods: {
     getHomeData() {
       getHomeData().then(res => {
-        // console.log(res)
         // 获取banner数据
         this.banner = res.data.data.banner.list
         // 获取recommend
         this.recommend = res.data.data.recommend.list
-        // console.log(this.recommend)
       })
     },
 
     getDetailData(type) {
       getDetailData(type, this.details[type].page).then(res => {
-        // console.log(res)
-        this.detail = res.data.data.list
-        this.details[type].list.push(...this.detail)
+        this.details[type].list.push(...res.data.data.list)
         this.details[type].page += 1
-        // console.log(this.details)
       })
     },
 
-    tabChange(type){
+    tabChange(type) {
       this.type = type
+      window.scrollTo({
+        top: this.tabPosition,
+        left: 0,
+        behavior:'smooth'
+      });
     },
 
-    loadMore() {
-      clearTimeout(this.timer);
-      this.timer = setTimeout(() => {
-        this.bannerHeight = document.body.clientWidth * 375 / 720
-        // let clientHeight = document.documentElement.clientHeight; //document.documentElement获取数据
-        let clientHeight = screen.height
-        let scrollTop = document.documentElement.scrollTop; //document.documentElement获取数据
-        let scrollHeight = document.documentElement.scrollHeight;//document.documentElement获取数据
-        // console.log(clientHeight,scrollTop,scrollHeight)
-        if (clientHeight + scrollTop +1 >= scrollHeight && scrollHeight > clientHeight * 2) {
-          setTimeout(()=>{
-            // console.log('上拉加载')
-            this.snackbar = true
-            this.getDetailData(this.type)
-          },500)
-        }
-      }, 15)
-    }
+    getScroll() {
+      let clientHeight = screen.height //屏幕高度
+      this.scrollTop = document.documentElement.scrollTop; //页面滚动高度
+      let scrollHeight = document.documentElement.scrollHeight;//页面总高度
+      this.backTopShow = this.scrollTop > 1000
+      this.tabPosition = this.$refs.tabPos.$el.offsetTop //tab位置
+      this.tabFixShow = this.scrollTop >= this.tabPosition
+      if (clientHeight + this.scrollTop + 1 >= scrollHeight && scrollHeight > clientHeight * 2) {
+        setTimeout(() => {
+          // console.log('上拉加载')
+          this.loading = true
+          this.getDetailData(this.type)
+        }, 500)
+      }
+    },
   }
 }
 </script>
@@ -167,4 +193,13 @@ export default {
   border-bottom: 10px solid #eee;
 }
 
+.v-tab--active:before {
+  background-color: white;
+}
+
+.tab-fix {
+  position: fixed;
+  top: 44px;
+  z-index: 9;
+}
 </style>

@@ -21,4 +21,7 @@ export default {
   padding-left: 15px;
   line-height: 40px;
 }
+.text-center{
+  padding-bottom: 10px;
+}
 </style>
