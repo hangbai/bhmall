@@ -7,7 +7,7 @@
       class="nav-bar"
   >
     <v-btn class="tab-bottom" depressed color="white" tile @click="back">
-      <v-icon>mdi-less-than</v-icon>
+      <img src="@/assets/img/common/back.svg">
     </v-btn>
     <v-tabs
         v-model="tab"

@@ -11,6 +11,7 @@
           <v-img
               :src="item.show.img"
               :lazy-src="defaultImage"
+              transition="scale-transition"
           >
             <template v-slot:placeholder>
               <v-row
