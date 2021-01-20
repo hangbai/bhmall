@@ -98,8 +98,7 @@ export default {
       loading: false,
       backTopShow: false,
       tabFixShow: false,
-      scrollTop:0,
-      reservedTop:0
+      scrollTop: 0,
     }
   },
   components: {
@@ -108,43 +107,40 @@ export default {
     BackTop
   },
   created() {
-    // console.log('created')
     this.getHomeData()
     this.getDetailData('pop')
     this.getDetailData('new')
     this.getDetailData('sell')
-  },
-  destroyed() {
-    // console.log('destroyed')
-  },
-  activated() {
-    // console.log('activated',this.reservedTop)
-    window.scrollTo({
-      top: this.reservedTop,
-      left: 0,
-    })
-  },
-  deactivated() {
-    this.reservedTop = this.scrollTop
-    // console.log('deactivated',this.scrollTop)
+    console.log('home created')
   },
   mounted() {
     this.bannerHeight = document.body.clientWidth * 375 / 720
-    window.addEventListener('scroll', this.getScroll, true);
+    console.log('home mounted')
+  },
+  activated() {
+    window.addEventListener('scroll', this.getScroll);
+    console.log('home activated')
+  },
+  deactivated() {
+    window.removeEventListener('scroll', this.getScroll);
+    console.log('home deactivated')
+  },
+  destroyed() {
+    console.log('home destroyed')
   },
   methods: {
     getHomeData() {
       getHomeData().then(res => {
         // 获取banner数据
-        this.banner = res.data.data.banner.list
+        this.banner = res.data.banner.list
         // 获取recommend
-        this.recommend = res.data.data.recommend.list
+        this.recommend = res.data.recommend.list
       })
     },
 
     getDetailData(type) {
       getDetailData(type, this.details[type].page).then(res => {
-        this.details[type].list.push(...res.data.data.list)
+        this.details[type].list.push(...res.data.list)
         this.details[type].page += 1
       })
     },
@@ -154,7 +150,7 @@ export default {
       window.scrollTo({
         top: this.tabPosition,
         left: 0,
-        behavior:'smooth'
+        behavior: 'smooth'
       });
     },
 
@@ -165,6 +161,7 @@ export default {
       this.backTopShow = this.scrollTop > 1000
       this.tabPosition = this.$refs.tabPos.$el.offsetTop //tab位置
       this.tabFixShow = this.scrollTop >= this.tabPosition
+      console.log('home', this.scrollTop)
       if (clientHeight + this.scrollTop + 1 >= scrollHeight && scrollHeight > clientHeight * 2) {
         setTimeout(() => {
           // console.log('上拉加载')
@@ -174,6 +171,7 @@ export default {
       }
     },
   }
+
 }
 </script>
 

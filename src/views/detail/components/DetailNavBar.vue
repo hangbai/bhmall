@@ -10,12 +10,15 @@
       <img src="@/assets/img/common/back.svg">
     </v-btn>
     <v-tabs
-        v-model="tab"
+        v-model="tabIndex"
         grow
         slider-size="0"
         color="pink lighten-3"
     >
-      <v-tab v-for="(item,index) in tabs" :key="index">{{ item }}</v-tab>
+      <v-tab v-for="(item,index) in tabs" :key="index" @click="onScroll(index)">
+<!--        <a href="#detail-rate">{{ item }}</a>-->
+        {{ item }}
+      </v-tab>
     </v-tabs>
     <div class="tab-bottom">
       <v-spacer></v-spacer>
@@ -26,16 +29,35 @@
 <script>
 export default {
   name: "DetailNavBar",
+  // props:{
+  //   navChange:{
+  //     type:Object,
+  //     default(){
+  //       return {}
+  //     }
+  //   }
+  // },
   data() {
     return {
-      tab: null,
       tabs: ['商品', '参数', '评论', '推荐'],
-      infos: []
+      tabsNumber:{0:'detail-carousel',1:'detail-params',2:'detail-rate',3:'detail-recommend'},
+      infos: [],
+      tabIndex:0,
     }
   },
   methods:{
     back(){
-      this.$router.go(-1)
+      this.$router.push('/')
+    },
+    onScroll(num){
+      this.tabIndex = num
+      // let pos = this.navChange[this.tabsNumber[num]]
+      // window.scrollTo({
+      //   top: pos,
+      //   left: 0,
+      // })
+      let tabChange = document.getElementById(this.tabsNumber[num]);
+      tabChange.scrollIntoView();
     }
   }
 }

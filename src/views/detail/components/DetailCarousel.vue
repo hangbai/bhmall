@@ -1,5 +1,6 @@
 <template>
   <v-carousel
+      id="detail-carousel"
       app
       :height="bannerHeight"
       cycle

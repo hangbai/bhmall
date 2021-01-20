@@ -6,7 +6,7 @@
     <v-row>
       <span class="price">{{ goodInfo.price }}</span>
       <span class="old-price">{{ goodInfo.oldPrice }}</span>
-      <span class="discount">
+      <span class="discount" v-if="goodInfo.discountDesc">
         <span color="#FF5777" class="discount-sub">{{ goodInfo.discountDesc }}</span>
       </span>
     </v-row>
