@@ -17,13 +17,16 @@
       <detail-info :detailInfo="detailInfo" v-show="posShow.goodShow"></detail-info>
 
       <!--      detail-item-params-->
-      <detail-item-params :itemParams="itemParams" v-if="itemParams" ref="params" v-show="posShow.paramsShow"></detail-item-params>
+      <detail-item-params :itemParams="itemParams" v-if="itemParams" ref="params"
+                          v-show="posShow.paramsShow"></detail-item-params>
 
       <!--      detail-rate-->
       <detail-rate :rate="rate" ref="rate" v-show="posShow.rateShow"></detail-rate>
 
       <!--      detail-recommend-->
       <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
+
+      <detail-back-top :backTopShow="backTopShow" @back-top="backTop"></detail-back-top>
     </v-main>
     <!--    detail-bottom-->
     <detail-bottom></detail-bottom>
@@ -40,6 +43,7 @@ import DetailItemParams from "@/views/detail/components/DetailItemParams";
 import DetailRate from "@/views/detail/components/DetailRate";
 import DetailRecommend from "@/views/detail/components/DetailRecommend";
 import DetailBottom from "@/views/detail/components/DetailBottom";
+import DetailBackTop from "@/views/detail/components/DetailBackTop";
 import {getDetail, getRecommend} from "@/network/database";
 
 export default {
@@ -53,10 +57,12 @@ export default {
     DetailItemParams,
     DetailRate,
     DetailRecommend,
-    DetailBottom
+    DetailBottom,
+    DetailBackTop
   },
   data() {
     return {
+      backTopShow: false,
       tabIndex: 0,
       tabs: ['商品', '参数', '评论', '推荐'],
       topImages: [],
@@ -68,7 +74,7 @@ export default {
       recommend: [],
       detailScrollTop: 0,
       pos: {tab: 0, 'goodPosition': 0, 'paramsPosition': 0, 'ratePosition': 0, 'recommendPosition': 0},
-      posShow:{goodShow:true,paramsShow:true,rateShow:true}
+      posShow: {goodShow: true, paramsShow: true, rateShow: true}
     }
   },
   created() {
@@ -124,6 +130,7 @@ export default {
     },
     getDetailScroll() {
       this.detailScrollTop = document.documentElement.scrollTop; //页面滚动高度
+      this.backTopShow = this.detailScrollTop > 1000
       this.getPosition()
     },
     getPosition() {
@@ -137,32 +144,35 @@ export default {
       this.pos['ratePosition'] = ratePosition
       this.pos['recommendPosition'] = recommendPosition
       this.checkTab()
-      // console.log(this.detailScrollTop,paramsPosition,ratePosition,recommendPosition)
+      // console.log(this.pos.tab, this.detailScrollTop, paramsPosition, ratePosition, recommendPosition)
     },
     getTabIndex(num) {
       this.tabIndex = num
-      switch (num){
+      switch (num) {
         case 0:
-          this.posShow = {goodShow:true,paramsShow:true,rateShow:true}
+          this.posShow = {goodShow: true, paramsShow: true, rateShow: true}
           break
         case 1:
-          this.posShow = {goodShow:false,paramsShow:true,rateShow:true}
+          this.posShow = {goodShow: false, paramsShow: true, rateShow: true}
           break
         case 2:
-          this.posShow = {goodShow:false,paramsShow:false,rateShow:true}
+          this.posShow = {goodShow: false, paramsShow: false, rateShow: true}
           break
         case 3:
-          this.posShow = {goodShow:false,paramsShow:false,rateShow:false}
+          this.posShow = {goodShow: false, paramsShow: false, rateShow: false}
           break
       }
       // console.log('get tab index',num)
     },
-    checkTab(){
-      if (this.pos['ratePosition']<this.pos['recommendPosition'] && this.pos['recommendPosition'] < this.detailScrollTop) this.pos.tab = 3
-      else if (this.pos['ratePosition'] < this.detailScrollTop) this.pos.tab = 2
-      else if (this.pos['paramsPosition'] < this.detailScrollTop) this.pos.tab = 1
+    checkTab() {
+      if (this.pos['ratePosition'] < this.pos['recommendPosition'] && this.pos['recommendPosition'] < this.detailScrollTop) this.pos.tab = 3
+      else if (this.pos['ratePosition'] < this.pos['recommendPosition'] && this.pos['ratePosition'] < this.detailScrollTop) this.pos.tab = 2
+      else if (this.pos['paramsPosition'] < this.pos['ratePosition'] && this.pos['paramsPosition'] < this.detailScrollTop) this.pos.tab = 1
       else if (this.pos['paramsPosition'] > this.detailScrollTop) this.pos.tab = 0
     },
+    backTop(key) {
+      this.posShow = key
+    }
   }
 }
 </script>
