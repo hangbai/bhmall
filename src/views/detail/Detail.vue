@@ -4,53 +4,26 @@
     <detail-nav-bar @tab-index="getTabIndex" :pos="pos"></detail-nav-bar>
 
     <v-main class="detail-main">
+      <!--      detail-carousel-->
+      <detail-carousel :topImages="topImages" v-show="posShow.goodShow"></detail-carousel>
 
-      <v-tabs-items v-model="tabIndex">
-        <v-tab-item>
-          <!--      detail-carousel-->
-          <detail-carousel :topImages="topImages"></detail-carousel>
+      <!--      detail-good-->
+      <detail-good :goodInfo="goodInfo" v-show="posShow.goodShow"></detail-good>
 
-          <!--      detail-good-->
-          <detail-good :goodInfo="goodInfo"></detail-good>
+      <!--      detail-shop-->
+      <detail-shop :shopInfo="shopInfo" v-show="posShow.goodShow"></detail-shop>
 
-          <!--      detail-shop-->
-          <detail-shop :shopInfo="shopInfo"></detail-shop>
+      <!--      detail-info-->
+      <detail-info :detailInfo="detailInfo" v-show="posShow.goodShow"></detail-info>
 
-          <!--      detail-info-->
-          <detail-info :detailInfo="detailInfo"></detail-info>
+      <!--      detail-item-params-->
+      <detail-item-params :itemParams="itemParams" v-if="itemParams" ref="params" v-show="posShow.paramsShow"></detail-item-params>
 
-          <!--      detail-item-params-->
-          <detail-item-params :itemParams="itemParams" v-if="itemParams" ref="params"></detail-item-params>
+      <!--      detail-rate-->
+      <detail-rate :rate="rate" ref="rate" v-show="posShow.rateShow"></detail-rate>
 
-          <!--      detail-rate-->
-          <detail-rate :rate="rate" ref="rate"></detail-rate>
-
-          <!--      detail-recommend-->
-          <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
-        </v-tab-item>
-        <v-tab-item>
-          <!--      detail-item-params-->
-          <detail-item-params :itemParams="itemParams" v-if="itemParams" ref="params"></detail-item-params>
-
-          <!--      detail-rate-->
-          <detail-rate :rate="rate" ref="rate"></detail-rate>
-
-          <!--      detail-recommend-->
-          <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
-        </v-tab-item>
-        <v-tab-item>
-          <!--      detail-rate-->
-          <detail-rate :rate="rate" ref="rate"></detail-rate>
-
-          <!--      detail-recommend-->
-          <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
-        </v-tab-item>
-        <v-tab-item>
-          <!--      detail-recommend-->
-          <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
-        </v-tab-item>
-      </v-tabs-items>
-
+      <!--      detail-recommend-->
+      <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
     </v-main>
     <!--    detail-bottom-->
     <detail-bottom></detail-bottom>
@@ -94,7 +67,8 @@ export default {
       rate: {},
       recommend: [],
       detailScrollTop: 0,
-      pos: {tab: 0, 'goodPosition': 0, 'paramsPosition': 0, 'ratePosition': 0, 'recommendPosition': 0}
+      pos: {tab: 0, 'goodPosition': 0, 'paramsPosition': 0, 'ratePosition': 0, 'recommendPosition': 0},
+      posShow:{goodShow:true,paramsShow:true,rateShow:true}
     }
   },
   created() {
@@ -149,26 +123,46 @@ export default {
       })
     },
     getDetailScroll() {
-      this.detailScrollTop = document.documentElement.scrollTop + 1; //页面滚动高度
-      if (this.detailScrollTop < this.pos['paramsPosition']) this.pos.tab = 0
-      else if (this.pos['paramsPosition'] <= this.detailScrollTop && this.detailScrollTop < this.pos['ratePosition']) this.pos.tab = 1
-      else if (this.pos['ratePosition'] <= this.detailScrollTop && this.detailScrollTop < this.pos['recommendPosition']) this.pos.tab = 2
-      else if (this.pos['recommendPosition'] <= this.detailScrollTop && screen.height < this.pos['recommendPosition']) this.pos.tab = 3
+      this.detailScrollTop = document.documentElement.scrollTop; //页面滚动高度
       this.getPosition()
     },
     getPosition() {
-      let paramsPosition = document.querySelectorAll("div[id='detail-params']")[0].offsetTop; //params位置
-      let ratePosition = document.querySelectorAll("div[id='detail-rate']")[0].offsetTop; //rate位置
-      let recommendPosition = document.querySelectorAll("div[id='detail-recommend']")[0].offsetTop; //recommend位置
+      // let paramsPosition = document.querySelectorAll("div[id='detail-params']")[0].offsetTop; //params位置
+      // let ratePosition = document.querySelectorAll("div[id='detail-rate']")[0].offsetTop; //rate位置
+      // let recommendPosition = document.querySelectorAll("div[id='detail-recommend']")[0].offsetTop; //recommend位置
+      let paramsPosition = this.$refs.params.$el.offsetTop //params位置
+      let ratePosition = this.$refs.rate.$el.offsetTop //rate位置
+      let recommendPosition = this.$refs.recommend.$el.offsetTop //recommend位置
       this.pos['paramsPosition'] = paramsPosition
       this.pos['ratePosition'] = ratePosition
       this.pos['recommendPosition'] = recommendPosition
-      console.log(this.pos)
+      this.checkTab()
+      // console.log(this.detailScrollTop,paramsPosition,ratePosition,recommendPosition)
     },
     getTabIndex(num) {
       this.tabIndex = num
+      switch (num){
+        case 0:
+          this.posShow = {goodShow:true,paramsShow:true,rateShow:true}
+          break
+        case 1:
+          this.posShow = {goodShow:false,paramsShow:true,rateShow:true}
+          break
+        case 2:
+          this.posShow = {goodShow:false,paramsShow:false,rateShow:true}
+          break
+        case 3:
+          this.posShow = {goodShow:false,paramsShow:false,rateShow:false}
+          break
+      }
       // console.log('get tab index',num)
-    }
+    },
+    checkTab(){
+      if (this.pos['ratePosition']<this.pos['recommendPosition'] && this.pos['recommendPosition'] < this.detailScrollTop) this.pos.tab = 3
+      else if (this.pos['ratePosition'] < this.detailScrollTop) this.pos.tab = 2
+      else if (this.pos['paramsPosition'] < this.detailScrollTop) this.pos.tab = 1
+      else if (this.pos['paramsPosition'] > this.detailScrollTop) this.pos.tab = 0
+    },
   }
 }
 </script>

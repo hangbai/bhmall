@@ -39,7 +39,6 @@ export default {
   data() {
     return {
       tabs: ['商品', '参数', '评论', '推荐'],
-      // tabsNumber:{0:'detail-carousel',1:'detail-params',2:'detail-rate',3:'detail-recommend'},
       tabsNumber: {0: 'detail-carousel', 1: 'detail-params', 2: 'detail-rate', 3: 'detail-recommend'},
       infos: [],
       tabIndex: 0,
