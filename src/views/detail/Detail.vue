@@ -1,32 +1,59 @@
 <template>
-  <div id="detail" >
+  <div id="detail">
     <!--    detail-nav-bar-->
-    <detail-nav-bar></detail-nav-bar>
+    <detail-nav-bar @tab-index="getTabIndex" :pos="pos"></detail-nav-bar>
 
     <v-main class="detail-main">
-      <!--      detail-carousel-->
-      <detail-carousel :topImages="topImages"></detail-carousel>
 
-      <!--      detail-good-->
-      <detail-good :goodInfo="goodInfo"></detail-good>
+      <v-tabs-items v-model="tabIndex">
+        <v-tab-item>
+          <!--      detail-carousel-->
+          <detail-carousel :topImages="topImages"></detail-carousel>
 
-      <!--      detail-shop-->
-      <detail-shop :shopInfo="shopInfo"></detail-shop>
+          <!--      detail-good-->
+          <detail-good :goodInfo="goodInfo"></detail-good>
 
-      <!--      detail-info-->
-      <detail-info :detailInfo="detailInfo"></detail-info>
+          <!--      detail-shop-->
+          <detail-shop :shopInfo="shopInfo"></detail-shop>
 
-      <!--      detail-item-params-->
-      <detail-item-params :itemParams="itemParams" v-if="itemParams" ref="params"></detail-item-params>
+          <!--      detail-info-->
+          <detail-info :detailInfo="detailInfo"></detail-info>
 
-      <!--      detail-rate-->
-      <detail-rate :rate="rate" ref="rate"></detail-rate>
+          <!--      detail-item-params-->
+          <detail-item-params :itemParams="itemParams" v-if="itemParams" ref="params"></detail-item-params>
 
-      <!--      detail-recommend-->
-      <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
+          <!--      detail-rate-->
+          <detail-rate :rate="rate" ref="rate"></detail-rate>
 
+          <!--      detail-recommend-->
+          <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
+        </v-tab-item>
+        <v-tab-item>
+          <!--      detail-item-params-->
+          <detail-item-params :itemParams="itemParams" v-if="itemParams" ref="params"></detail-item-params>
+
+          <!--      detail-rate-->
+          <detail-rate :rate="rate" ref="rate"></detail-rate>
+
+          <!--      detail-recommend-->
+          <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
+        </v-tab-item>
+        <v-tab-item>
+          <!--      detail-rate-->
+          <detail-rate :rate="rate" ref="rate"></detail-rate>
+
+          <!--      detail-recommend-->
+          <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
+        </v-tab-item>
+        <v-tab-item>
+          <!--      detail-recommend-->
+          <detail-recommend :recommend="recommend" ref="recommend"></detail-recommend>
+        </v-tab-item>
+      </v-tabs-items>
 
     </v-main>
+    <!--    detail-bottom-->
+    <detail-bottom></detail-bottom>
   </div>
 </template>
 
@@ -39,6 +66,7 @@ import DetailInfo from "@/views/detail/components/DetailInfo";
 import DetailItemParams from "@/views/detail/components/DetailItemParams";
 import DetailRate from "@/views/detail/components/DetailRate";
 import DetailRecommend from "@/views/detail/components/DetailRecommend";
+import DetailBottom from "@/views/detail/components/DetailBottom";
 import {getDetail, getRecommend} from "@/network/database";
 
 export default {
@@ -51,10 +79,13 @@ export default {
     DetailInfo,
     DetailItemParams,
     DetailRate,
-    DetailRecommend
+    DetailRecommend,
+    DetailBottom
   },
   data() {
     return {
+      tabIndex: 0,
+      tabs: ['商品', '参数', '评论', '推荐'],
       topImages: [],
       goodInfo: {},
       shopInfo: {},
@@ -63,7 +94,7 @@ export default {
       rate: {},
       recommend: [],
       detailScrollTop: 0,
-      navChange: {tab: 0, 'goodPosition': 0, 'paramsPosition': 0, 'ratePosition': 0, 'recommendPosition': 0}
+      pos: {tab: 0, 'goodPosition': 0, 'paramsPosition': 0, 'ratePosition': 0, 'recommendPosition': 0}
     }
   },
   created() {
@@ -77,17 +108,9 @@ export default {
       top: 0,
       left: 0,
     })
-    this.$nextTick(()=>{
-      setTimeout(()=>{
-        this.getPosition()
-        console.log('detail mounted2')
-      },500)
-
-    })
     console.log('detail mounted')
   },
   updated() {
-    this.getPosition()
     console.log('detail updated')
   },
   destroyed() {
@@ -117,7 +140,7 @@ export default {
         this.itemParams = data.itemParams
         this.itemParams['rule'] = data.itemParams.rule.tables.shift()
         this.itemParams['info'] = data.itemParams.info.set
-        data.rate.list ? this.rate = data.rate.list.slice(-1)[0]: this.rate ={}
+        data.rate.list ? this.rate = data.rate.list.slice(-1)[0] : this.rate = {}
       })
     },
     getRecommend() {
@@ -126,32 +149,30 @@ export default {
       })
     },
     getDetailScroll() {
-      this.detailScrollTop = document.documentElement.scrollTop; //页面滚动高度
-      if (this.detailScrollTop < this.navChange['paramsPosition']) this.navChange.tab = 0
-      else if (this.navChange['paramsPosition']<= this.detailScrollTop && this.detailScrollTop < this.navChange['ratePosition']) this.navChange.tab = 1
-      else if (this.navChange['ratePosition']<= this.detailScrollTop && this.detailScrollTop < this.navChange['recommendPosition']) this.navChange.tab = 2
-      else if (this.navChange['recommendPosition']<= this.detailScrollTop) this.navChange.tab = 3
-      console.log('detail',this.detailScrollTop)
+      this.detailScrollTop = document.documentElement.scrollTop + 1; //页面滚动高度
+      if (this.detailScrollTop < this.pos['paramsPosition']) this.pos.tab = 0
+      else if (this.pos['paramsPosition'] <= this.detailScrollTop && this.detailScrollTop < this.pos['ratePosition']) this.pos.tab = 1
+      else if (this.pos['ratePosition'] <= this.detailScrollTop && this.detailScrollTop < this.pos['recommendPosition']) this.pos.tab = 2
+      else if (this.pos['recommendPosition'] <= this.detailScrollTop && screen.height < this.pos['recommendPosition']) this.pos.tab = 3
+      this.getPosition()
     },
     getPosition() {
-      let paramsPosition = this.$refs.params.$el.offsetTop //params位置
-      let ratePosition = this.$refs.rate.$el.offsetTop //rate位置
-      let recommendPosition = this.$refs.recommend.$el.offsetTop //recommend位置
-      this.navChange['paramsPosition'] = paramsPosition
-      this.navChange['ratePosition'] = ratePosition
-      this.navChange['recommendPosition'] = recommendPosition
-      // console.log(this.navChange)
+      let paramsPosition = document.querySelectorAll("div[id='detail-params']")[0].offsetTop; //params位置
+      let ratePosition = document.querySelectorAll("div[id='detail-rate']")[0].offsetTop; //rate位置
+      let recommendPosition = document.querySelectorAll("div[id='detail-recommend']")[0].offsetTop; //recommend位置
+      this.pos['paramsPosition'] = paramsPosition
+      this.pos['ratePosition'] = ratePosition
+      this.pos['recommendPosition'] = recommendPosition
+      console.log(this.pos)
     },
+    getTabIndex(num) {
+      this.tabIndex = num
+      // console.log('get tab index',num)
+    }
   }
 }
 </script>
 
 <style scoped>
-.detail-main{
-  margin-top: 44px;
-  padding-top: 0px!important;
-  height: calc(100vh - 44px);
 
-  overflow-y: scroll;
-}
 </style>

@@ -8,7 +8,21 @@
     </div>
     <div class="di-images">
       <div class="di-image" v-for="(item, index) in detailInfo.detailImage" :key="index">
-        <img :src="item" alt="">
+        <v-img :src="item" :lazy-src="defaultImage" ref="img">
+          <template v-slot:placeholder>
+            <v-row
+                class="ma-0"
+                align="center"
+                justify="center"
+                style="height:100%"
+            >
+              <v-progress-circular
+                  indeterminate
+                  color="grey lighten-5"
+              ></v-progress-circular>
+            </v-row>
+          </template>
+        </v-img>
       </div>
     </div>
   </div>
@@ -16,8 +30,15 @@
 </template>
 
 <script>
+
 export default {
   name: "DetailInfo",
+  data(){
+    return{
+      defaultImage: require('@/assets/img/common/placeholder.png'),
+      counter:0
+    }
+  },
   props: {
     detailInfo: {
       type: Object,
@@ -25,7 +46,7 @@ export default {
         return {}
       }
     }
-  }
+  },
 }
 </script>
 

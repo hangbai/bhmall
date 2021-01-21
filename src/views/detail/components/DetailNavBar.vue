@@ -10,13 +10,12 @@
       <img src="@/assets/img/common/back.svg">
     </v-btn>
     <v-tabs
-        v-model="tabIndex"
+        v-model="pos.tab"
         grow
         slider-size="0"
         color="pink lighten-3"
     >
       <v-tab v-for="(item,index) in tabs" :key="index" @click="onScroll(index)">
-<!--        <a href="#detail-rate">{{ item }}</a>-->
         {{ item }}
       </v-tab>
     </v-tabs>
@@ -29,38 +28,40 @@
 <script>
 export default {
   name: "DetailNavBar",
-  // props:{
-  //   navChange:{
-  //     type:Object,
-  //     default(){
-  //       return {}
-  //     }
-  //   }
-  // },
+  props:{
+    pos:{
+      type:Object,
+      default(){
+        return {}
+      }
+    }
+  },
   data() {
     return {
       tabs: ['商品', '参数', '评论', '推荐'],
-      tabsNumber:{0:'detail-carousel',1:'detail-params',2:'detail-rate',3:'detail-recommend'},
+      // tabsNumber:{0:'detail-carousel',1:'detail-params',2:'detail-rate',3:'detail-recommend'},
+      tabsNumber: {0: 'detail-carousel', 1: 'detail-params', 2: 'detail-rate', 3: 'detail-recommend'},
       infos: [],
-      tabIndex:0,
+      tabIndex: 0,
     }
   },
-  methods:{
-    back(){
+  methods: {
+    back() {
       this.$router.push('/')
     },
-    onScroll(num){
-      this.tabIndex = num
-      // let pos = this.navChange[this.tabsNumber[num]]
-      // window.scrollTo({
-      //   top: pos,
-      //   left: 0,
-      // })
-      let tabChange = document.getElementById(this.tabsNumber[num]);
-      tabChange.scrollIntoView();
+    onScroll(num) {
+      this.pos.tab = num
+      this.$emit('tab-index',num)
+      window.scrollTo({
+        top: 0,
+        left: 0,
+      })
+      // let tabChange = document.getElementById(this.tabsNumber[num]);
+      // tabChange.scrollIntoView();
     }
   }
 }
+
 </script>
 
 <style scoped>
