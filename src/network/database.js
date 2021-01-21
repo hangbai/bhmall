@@ -30,3 +30,13 @@ export function getRecommend() {
     url: '/recommend'
   })
 }
+
+export function getCategory(maitKey){
+  return request({
+    url:'subcategory',
+    params: {
+      maitKey
+    }
+
+  })
+}
