@@ -14,12 +14,20 @@
     <v-main>
       <div class="category-main">
         <div class="left">
-          <div v-for="(item,index) in tabs" :key="index">
-            <div class="tab-item" :class='{active:currentIndex===index}' @click="tabClick(index)">{{ item }}</div>
+          <div v-for="(item,index) in categoryList" :key="index">
+            <div class="tab-item" :class='{active:currentIndex===index}' @click="tabClick(index,item.maitKey,item.miniWallkey)">{{ item.title }}</div>
           </div>
         </div>
         <div class="right">
           <category-more :categoryData="categoryData"></category-more>
+          <v-tabs v-model="tab" height="40px" fixed-tabs color="pink lighten-3" class='Pop-Over' ref="tabPos">
+            <v-tab v-for="item in tabs" :key="item.tab">{{ item.tab }}</v-tab>
+          </v-tabs>
+          <v-tabs-items v-model="tab">
+            <v-tab-item v-for="item in tabs" :key="item.tab">
+              <category-detail :detail="categoryDetails[item.type]"/>
+            </v-tab-item>
+          </v-tabs-items>
         </div>
       </div>
     </v-main>
@@ -28,37 +36,65 @@
 
 <script>
 import CategoryMore from "@/views/category/components/CategoryMore";
-import {getCategory} from "@/network/database";
+import CategoryDetail from "@/views/category/components/CategoryDetail";
+import {getCategory,getMaitKey,getMiniWallkey} from "@/network/database";
 
 export default {
   name: "Category",
   components:{
-    CategoryMore
+    CategoryMore,
+    CategoryDetail
   },
   data() {
     return {
+      tab:null,
+      categoryList:[],
       currentIndex: 0,
-      tabs: ['正在流行', '上衣', '裤子', '裙子', '内衣', '女鞋', '男友', '包包', '运动', '配饰', '美妆', '个护', '家居', '百货', '母婴', '食品'],
-      itemsIndex: {0: 3627,1:582,2:596,3:595,4:598,5:597,6:599,7:600,8:5253,9:609,10:594,11:830,12:602,13:606,14:603,15:605},
-      listsIndex: {0: 10062603,1:50003,2:50005,3:50004,4:50006,5:50532,6:51716,7:50675,8:10056587,9:50797,10:50010,11:52378,12:10057031,13:10060232,14:20003089,15:52014},
-      categoryData:[]
+      tabs: [{tab: '流行', type: 'pop'}, {tab: '新款', type: 'new'}, {tab: '精选', type: 'sell'}],
+      categoryData:[],
+      categoryDetails:{'pop':[],'sell':[],'new':[],},
+      currentMiniWallkey:'10062603'
     }
   },
   methods: {
-    tabClick(index) {
+    tabClick(index,maitKey,miniWallkey) {
       this.currentIndex = index
-      this.getCategory(this.itemsIndex[this.currentIndex])
-      console.log(index, this.itemsIndex[this.currentIndex])
+      this.currentMiniWallkey=miniWallkey
+      this.getMaitKey(maitKey)
+      this.tab=0
+      this.getMiniWallkey(miniWallkey,'pop')
+      this.getMiniWallkey(miniWallkey,'sell')
+      this.getMiniWallkey(miniWallkey,'new')
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior:'smooth'
+      });
     },
-    getCategory(key){
-      getCategory(key).then(res=>{
+    getCategory(){
+      getCategory().then(res=>{
+        this.categoryList = res.data.category.list
+      })
+    },
+    getMaitKey(maitKey){
+      getMaitKey(maitKey).then(res=>{
         this.categoryData = res.data.list
         console.log(res)
       })
-    }
+    },
+    getMiniWallkey(miniWallkey,type){
+      getMiniWallkey(miniWallkey,type).then(res=>{
+        this.categoryDetails[type] = res
+        console.log(this.categoryDetails)
+      })
+    },
   },
   created() {
-    this.getCategory(3627)
+    this.getCategory()
+    this.getMaitKey(3627)
+    this.getMiniWallkey(10062603,'pop')
+    this.getMiniWallkey(10062603,'sell')
+    this.getMiniWallkey(10062603,'new')
   }
 }
 </script>
@@ -105,5 +141,9 @@ export default {
 .v-toolbar__title {
   color: white;
   font-size: 16px !important;
+}
+
+.v-tab--active:before {
+  background-color: white;
 }
 </style>

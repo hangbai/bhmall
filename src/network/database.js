@@ -31,12 +31,27 @@ export function getRecommend() {
   })
 }
 
-export function getCategory(maitKey){
+export function getCategory() {
   return request({
-    url:'subcategory',
+    url: '/category'
+  })
+}
+
+export function getMaitKey(maitKey){
+  return request({
+    url:'/subcategory',
     params: {
       maitKey
     }
+  })
+}
 
+export function getMiniWallkey(miniWallkey,type){
+  return request({
+    url:'/subcategory/detail',
+    params: {
+      miniWallkey,
+      type
+    }
   })
 }
