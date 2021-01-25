@@ -6,7 +6,7 @@
         <span>全选</span>
       </div>
       <div class="total-number">合计:¥0.00</div>
-      <div class="total-pay">去计算(0)</div>
+      <div class="total-pay" @click="test">去计算(0)</div>
     </div>
   </div>
 </template>
@@ -23,6 +23,9 @@ export default {
     checkSelect() {
       this.isActive = !this.isActive
       console.log('click')
+    },
+    test(){
+      console.log('shopping',this.$store.state.itemInCart)
     }
   }
 }

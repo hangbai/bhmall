@@ -1,8 +1,8 @@
 <template>
   <div class="shopping-item">
     <div>
-      <div class="item">
-        <div class="item-check" :class="{active:isActive}" @click="checkSelect">
+      <div class="item" v-for="(item,index) in itemInCart" :key="index">
+        <div class="item-check" :class="{active:isActive}" @click="checkSelect(index)">
           <img src="@/assets/img/cart/tick.svg">
         </div>
         <div class="item-image"><img :src="item.imgURL" alt=""></div>
@@ -11,7 +11,7 @@
           <div class="item-dec">商品描述:{{ item.desc }}</div>
           <div class="item-buy">
             <div class="price">¥{{ item.newPrice }}</div>
-            <div class="count">x6</div>
+            <div class="count">{{item.status}}x{{ item.amount }}</div>
           </div>
         </div>
       </div>
@@ -24,21 +24,25 @@ export default {
   name: "ShoppingList",
   data() {
     return {
-      item: {
-        iid: "1m745k0",
-        imgURL: "//s11.mogucdn.com/mlcdn/c45406/180811_1k5hfa6d803575df3lkb6j67l5j3c_640x960.jpg",
-        title: "2018秋季新款韩版女装字母印花宽松连帽休闲卫衣搭配松紧腰九分牛仔裤两件套女时尚运动套装潮",
-        desc: "你的运动套装，也可以一起承包了~棉混纺的连帽卫衣，版型虽宽松，但因为有罗纹收口，穿起来立体挺括，能遮…助攻，翻边上的亮粉字母数字，和上衣一个调调，闪闪地时尚别致.清清爽爽的运动风其实也很拉好感der~",
-        newPrice: "98.00"
-      },
-      isActive: false
+      itemInCart: [],
+      isActive: true,
+      currentIndex:-1,
     }
   },
   methods: {
-    checkSelect() {
-      this.isActive = !this.isActive
-      console.log('click')
+    checkSelect(index) {
+      this.currentIndex = index
+      this.isActive = this.currentIndex === index
+      this.$store.state.itemInCart[index].status = this.currentIndex === index
+      console.log('click',index,this.isActive,this.$store.state.itemInCart[index].status)
+      // this.$store.state.itemInCart[index].status = !this.$store.state.itemInCart[index].status
+      // this.isActive = !this.$store.state.itemInCart[index].status
+      // this.$store.state.itemInCart[index].status = this.isActive
+
     }
+  },
+  mounted() {
+    this.itemInCart = this.$store.state.itemInCart
   }
 }
 </script>
@@ -53,13 +57,13 @@ export default {
 .item-check img {
   vertical-align: middle;
   border-radius: 50%;
-  background-color: rgb(244, 143, 177);
-  border: 2px solid rgb(244, 143, 177);
+  background-color: white;
+  border: 2px solid rgb(204, 204, 204);
 }
 
 .active img {
-  background-color: white;
-  border: 2px solid rgb(204, 204, 204);
+  background-color: rgb(244, 143, 177);
+  border: 2px solid rgb(244, 143, 177);
 }
 
 .count {

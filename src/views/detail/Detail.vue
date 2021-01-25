@@ -29,7 +29,7 @@
       <detail-back-top :backTopShow="backTopShow" @back-top="backTop"></detail-back-top>
     </v-main>
     <!--    detail-bottom-->
-    <detail-bottom></detail-bottom>
+    <detail-bottom :itemToCart="itemToCart"></detail-bottom>
   </div>
 </template>
 
@@ -74,7 +74,8 @@ export default {
       recommend: [],
       detailScrollTop: 0,
       pos: {tab: 0, 'goodPosition': 0, 'paramsPosition': 0, 'ratePosition': 0, 'recommendPosition': 0},
-      posShow: {goodShow: true, paramsShow: true, rateShow: true}
+      posShow: {goodShow: true, paramsShow: true, rateShow: true},
+      itemToCart:{}
     }
   },
   created() {
@@ -121,6 +122,14 @@ export default {
         this.itemParams['rule'] = data.itemParams.rule.tables.shift()
         this.itemParams['info'] = data.itemParams.info.set
         data.rate.list ? this.rate = data.rate.list.slice(-1)[0] : this.rate = {}
+        // get itemToCart
+        this.itemToCart['iid'] = data.itemInfo.iid
+        this.itemToCart['title'] = data.itemInfo.title
+        this.itemToCart['imgURL'] = data.itemInfo.topImages[0]
+        this.itemToCart['des'] = data.itemInfo.desc
+        this.itemToCart['newPrice'] = data.itemInfo.lowNowPrice
+        this.itemToCart['amount'] = 1
+        this.itemToCart['status'] = true
       })
     },
     getRecommend() {

@@ -30,6 +30,9 @@ export default {
   components: {
     ShoppingList,
     ShoppingPayment
+  },
+  mounted() {
+    console.log('shopping mounted',this.$store.state.itemInCart)
   }
 }
 </script>

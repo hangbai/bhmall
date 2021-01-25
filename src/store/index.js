@@ -5,7 +5,9 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    count: 0
+    count: 0,
+    itemInCart:[],
+    itemList:[]
   },
   mutations: {
     increment (state) {
