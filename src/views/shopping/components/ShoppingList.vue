@@ -2,7 +2,7 @@
   <div class="shopping-item">
     <div>
       <div class="item" v-for="(item,index) in itemInCart" :key="index">
-        <div class="item-check" :class="{active:isActive}" @click="checkSelect(index)">
+        <div class="item-check" :class="{active:item.status}" @click="checkSelect(index)">
           <img src="@/assets/img/cart/tick.svg">
         </div>
         <div class="item-image"><img :src="item.imgURL" alt=""></div>
@@ -11,7 +11,7 @@
           <div class="item-dec">商品描述:{{ item.desc }}</div>
           <div class="item-buy">
             <div class="price">¥{{ item.newPrice }}</div>
-            <div class="count">{{item.status}}x{{ item.amount }}</div>
+            <div class="count">{{ item.amount }}</div>
           </div>
         </div>
       </div>
@@ -25,24 +25,29 @@ export default {
   data() {
     return {
       itemInCart: [],
-      isActive: true,
-      currentIndex:-1,
+      itemStatus:[],
     }
   },
   methods: {
     checkSelect(index) {
-      this.currentIndex = index
-      this.isActive = this.currentIndex === index
-      this.$store.state.itemInCart[index].status = this.currentIndex === index
-      console.log('click',index,this.isActive,this.$store.state.itemInCart[index].status)
-      // this.$store.state.itemInCart[index].status = !this.$store.state.itemInCart[index].status
-      // this.isActive = !this.$store.state.itemInCart[index].status
-      // this.$store.state.itemInCart[index].status = this.isActive
-
+      this.itemStatus[index] = !this.itemStatus[index]
+      this.$store.state.itemInCart[index].status = !this.$store.state.itemInCart[index].status
+      console.log('itemStatus',index,this.itemStatus[index])
+      console.log('state',index,this.$store.state.itemInCart[index].status);
+      console.log('itemInCart',this.$store.state.itemInCart);
+      console.log('itemStatus',this.$store.state.itemStatus);
+      this.$forceUpdate() //强制刷新
     }
   },
   mounted() {
     this.itemInCart = this.$store.state.itemInCart
+    this.itemStatus = this.$store.state.itemStatus
+    console.log('shopping mounted');
+  },
+  updated(){
+    this.itemInCart = this.$store.state.itemInCart
+    this.itemStatus = this.$store.state.itemStatus
+    console.log('shopping updated');
   }
 }
 </script>

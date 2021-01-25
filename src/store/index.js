@@ -7,11 +7,17 @@ const store = new Vuex.Store({
   state: {
     count: 0,
     itemInCart:[],
-    itemList:[]
+    itemStatus:[],
+    itemList:[],
+    
   },
   mutations: {
     increment (state) {
       state.count++
+    },
+    changeSelect(state,payload){
+      state.itemInCart[payload.index].status = !state.itemInCart[payload.index].status
+      console.log('changeSelect');
     }
   }
 })
