@@ -5,16 +5,23 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    count: 0,
     itemInCart:[],
     itemStatus:[],
     itemList:[],
-    
+    isPayActive:true
+  },
+  getters:{
+    itemCount(state){
+      return state.itemInCart.length
+    },
+    itemInCart(state){
+      return state.itemInCart
+    },
+    itemStatus(state){
+      return state.itemStatus
+    },
   },
   mutations: {
-    increment (state) {
-      state.count++
-    },
     changeSelect(state,payload){
       state.itemInCart[payload.index].status = !state.itemInCart[payload.index].status
       console.log('changeSelect');

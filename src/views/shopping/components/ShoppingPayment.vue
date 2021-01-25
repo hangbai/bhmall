@@ -1,12 +1,12 @@
 <template>
   <div class="payment ">
     <div class="p-row">
-      <div class="total-select" :class="{active:isActive}" @click="checkSelect">
+      <div class="total-select" :class="{active:isActive}" @click="selectAll" >
         <img src="@/assets/img/cart/tick.svg">
         <span>全选</span>
       </div>
-      <div class="total-number">合计:¥0.00</div>
-      <div class="total-pay" @click="test">去计算(0)</div>
+      <div class="total-number">合计:¥{{ total.toFixed(2) }}</div>
+      <div class="total-pay">去计算(0)</div>
     </div>
   </div>
 </template>
@@ -14,20 +14,29 @@
 <script>
 export default {
   name: "ShoppingPayment",
-  data() {
-    return {
-      isActive: false
+  props:{
+    isActive:{
+      type:Boolean,
+      default(){
+        return true
+      }
+    },
+    total:{
+      type:Number,
+      default() {
+        return 0.00
+      }
     }
   },
   methods: {
-    checkSelect() {
-      this.isActive = !this.isActive
-      console.log('click')
+    selectAll() {
+      this.$store.state.itemStatus.fill(true)
+      this.$emit('selectAll')
+      // console.log('selectAll')
     },
-    test(){
-      console.log('shopping',this.$store.state.itemInCart)
-    }
-  }
+  },
+
+
 }
 </script>
 
@@ -44,13 +53,13 @@ export default {
   margin-right: 5px;
   vertical-align: middle;
   border-radius: 50%;
-  background-color: rgb(244, 143, 177);
-  border: 2px solid rgb(244, 143, 177);
+  background-color: white;
+  border: 2px solid rgb(204, 204, 204);
 }
 
 .active img {
-  background-color: white;
-  border: 2px solid rgb(204, 204, 204);
+  background-color: rgb(244, 143, 177);
+  border: 2px solid rgb(244, 143, 177);
 }
 
 .total-number{

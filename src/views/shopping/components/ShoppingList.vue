@@ -2,13 +2,13 @@
   <div class="shopping-item">
     <div>
       <div class="item" v-for="(item,index) in itemInCart" :key="index">
-        <div class="item-check" :class="{active:item.status}" @click="checkSelect(index)">
+        <div class="item-check" :class="{active:itemStatus[index]}" @click="checkSelect(index)">
           <img src="@/assets/img/cart/tick.svg">
         </div>
         <div class="item-image"><img :src="item.imgURL" alt=""></div>
         <div class="item-info">
           <div class="item-title">{{ item.title }}</div>
-          <div class="item-dec">商品描述:{{ item.desc }}</div>
+          <div class="item-dec">商品描述:{{ item.des }}</div>
           <div class="item-buy">
             <div class="price">¥{{ item.newPrice }}</div>
             <div class="count">{{ item.amount }}</div>
@@ -22,33 +22,32 @@
 <script>
 export default {
   name: "ShoppingList",
-  data() {
-    return {
-      itemInCart: [],
-      itemStatus:[],
-    }
+  props:{
+    itemInCart:{
+      type:Array,
+      default(){
+        return []
+      }
+    },
+    itemStatus:{
+      type:Array,
+      default(){
+        return []
+      }
+    },
   },
   methods: {
     checkSelect(index) {
-      this.itemStatus[index] = !this.itemStatus[index]
-      this.$store.state.itemInCart[index].status = !this.$store.state.itemInCart[index].status
-      console.log('itemStatus',index,this.itemStatus[index])
-      console.log('state',index,this.$store.state.itemInCart[index].status);
-      console.log('itemInCart',this.$store.state.itemInCart);
-      console.log('itemStatus',this.$store.state.itemStatus);
-      this.$forceUpdate() //强制刷新
+      this.itemStatus[index] = ! this.itemStatus[index]
+      this.$emit('checkSelect',this.itemStatus)
+      this.$forceUpdate()
+      console.log('check')
     }
   },
-  mounted() {
-    this.itemInCart = this.$store.state.itemInCart
-    this.itemStatus = this.$store.state.itemStatus
-    console.log('shopping mounted');
+  activated() {
+    this.$forceUpdate()
+    console.log('shopping list activated');
   },
-  updated(){
-    this.itemInCart = this.$store.state.itemInCart
-    this.itemStatus = this.$store.state.itemStatus
-    console.log('shopping updated');
-  }
 }
 </script>
 
