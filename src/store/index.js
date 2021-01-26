@@ -6,9 +6,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     itemInCart:[],
-    itemStatus:[],
     itemList:[],
-    isPayActive:true
   },
   getters:{
     itemCount(state){
@@ -16,9 +14,6 @@ const store = new Vuex.Store({
     },
     itemInCart(state){
       return state.itemInCart
-    },
-    itemStatus(state){
-      return state.itemStatus
     },
   },
   mutations: {

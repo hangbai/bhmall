@@ -13,10 +13,16 @@
     </v-app-bar>
     <v-main>
       <!--      shopping-list-->
-      <shopping-list :itemInCart="itemInCart" :itemStatus="itemStatus" @checkSelect="checkSelect"></shopping-list>
+      <shopping-list
+          :itemInCart="itemInCart"
+          :itemStatus="itemStatus"
+          @subAmount="subAmount"
+          @addAmount="addAmount"
+          @checkSelect="checkSelect"></shopping-list>
 
       <!--      shopping-payment-->
-      <shopping-payment :isActive="isActive" @selectAll="selectAll"></shopping-payment>
+      <shopping-payment :isActive="isActive" :payAmount="payAmount" :total="total"
+                        @selectAll="selectAll"></shopping-payment>
     </v-main>
   </div>
 </template>
@@ -27,9 +33,12 @@ import ShoppingPayment from "@/views/shopping/components/ShoppingPayment";
 
 export default {
   name: "Shopping",
-  data(){
+  data() {
     return {
-      isActive:true,
+      isActive: true,
+      itemStatus: [],
+      payAmount: 0,
+      total: 0,
     }
   },
   components: {
@@ -37,30 +46,54 @@ export default {
     ShoppingPayment
   },
   mounted() {
-    console.log('shopping mounted')
+    this.itemStatus = new Array(this.itemCount).fill(true)
+    console.log('shopping mounted', this.itemStatus)
+  },
+  activated() {
+    this.getPayment()
+    console.log('shopping activated')
   },
   computed: {
-    itemCount(){
+    itemCount() {
       return this.$store.getters.itemCount
     },
-    itemInCart(){
+    itemInCart() {
       return this.$store.getters.itemInCart
     },
-    itemStatus(){
-      return this.$store.getters.itemStatus
-    },
   },
-  methods:{
-    selectAll(){
-      this.isActive=true
-      console.log('selectAll-2',this.$store.state.itemStatus)
+  methods: {
+    selectAll() {
+      this.isActive = true
+      this.itemStatus = new Array(this.itemCount).fill(true)
+      this.getPayment()
+      // console.log('selectAll',this.$store.state.itemStatus)
     },
-    checkSelect(e){
-      if (e.indexOf(false) !== -1) this.isActive=false
-      else this.isActive=true
-      console.log('chech2',e)
+    checkSelect(e) {
+      if (e.indexOf(false) !== -1) this.isActive = false
+      else this.isActive = true
+      this.getPayment()
+      // console.log('shopping checkSelect', e)
     },
-  }
+    getPayment() {
+      this.payAmount = 0
+      this.total = 0
+      for (let i = 0; i < this.itemStatus.length; i++) {
+        if (this.itemStatus[i] === true) {
+          // console.log('amount', i, this.itemInCart[i].amount)
+          this.total += this.itemInCart[i].amount * this.itemInCart[i].newPrice
+          this.payAmount += this.itemInCart[i].amount
+        }
+      }
+    },
+    subAmount(){
+      this.getPayment()
+      // console.log('subAmount',index)
+    },
+    addAmount(){
+      this.getPayment()
+      // console.log('addAmount',index)
+    }
+  },
 }
 </script>
 

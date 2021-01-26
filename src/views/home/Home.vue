@@ -161,7 +161,7 @@ export default {
       this.backTopShow = this.scrollTop > 1000
       this.tabPosition = this.$refs.tabPos.$el.offsetTop //tab位置
       this.tabFixShow = this.scrollTop >= this.tabPosition
-      console.log('home', this.scrollTop)
+      // console.log('home', this.scrollTop)
       if (clientHeight + this.scrollTop + 1 >= scrollHeight && scrollHeight > clientHeight * 2) {
         setTimeout(() => {
           // console.log('上拉加载')

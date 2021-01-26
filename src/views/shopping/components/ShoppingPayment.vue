@@ -6,7 +6,7 @@
         <span>全选</span>
       </div>
       <div class="total-number">合计:¥{{ total.toFixed(2) }}</div>
-      <div class="total-pay">去计算(0)</div>
+      <div class="total-pay">去计算({{ payAmount }})</div>
     </div>
   </div>
 </template>
@@ -26,17 +26,21 @@ export default {
       default() {
         return 0.00
       }
+    },
+    payAmount:{
+      type:Number,
+      default() {
+        return 0
+      }
     }
   },
   methods: {
     selectAll() {
-      this.$store.state.itemStatus.fill(true)
+      // this.$store.state.itemStatus.fill(true)
       this.$emit('selectAll')
       // console.log('selectAll')
     },
   },
-
-
 }
 </script>
 

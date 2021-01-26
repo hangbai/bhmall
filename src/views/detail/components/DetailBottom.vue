@@ -65,21 +65,20 @@ export default {
       if (index === -1 && this.itemToCart.iid) {
         this.$store.state.itemList.push(this.itemToCart.iid)
         this.$store.state.itemInCart.push(this.itemToCart)
-        this.$store.state.itemStatus.push(this.itemToCart.status)
-        console.log(this.itemToCart.status);
+        // console.log(this.itemToCart.status);
         this.isInChat = true
-        console.log('不存在')
+        // console.log('不存在')
       } else {
         if (this.itemToCart.iid) {
           this.$store.state.itemInCart[index].amount += 1
           this.isMore = true
-          console.log('存在')
+          // console.log('存在')
           setTimeout(()=>{
             this.isMore=false
           },1000)
         } else console.log('加载失败')
       }
-      console.log('addCart', this.$store.state.itemInCart ,this.$store.state.itemList,this.$store.state.itemStatus)
+      // console.log('addCart', this.$store.state.itemInCart ,this.$store.state.itemList)
     },
     goShopping() {
       this.$router.push('/shopping')

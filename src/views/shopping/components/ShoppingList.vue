@@ -11,7 +11,11 @@
           <div class="item-dec">商品描述:{{ item.des }}</div>
           <div class="item-buy">
             <div class="price">¥{{ item.newPrice }}</div>
-            <div class="count">{{ item.amount }}</div>
+            <div class="count">
+              <div class="count-change" @click="subAmount(index)"><v-icon small>mdi-minus</v-icon></div>
+              <div>{{ item.amount }}</div>
+              <div class="count-change" @click="addAmount(index)"><v-icon small>mdi-plus</v-icon></div>
+            </div>
           </div>
         </div>
       </div>
@@ -22,6 +26,11 @@
 <script>
 export default {
   name: "ShoppingList",
+  data(){
+    return{
+      count:0
+    }
+  },
   props:{
     itemInCart:{
       type:Array,
@@ -41,17 +50,50 @@ export default {
       this.itemStatus[index] = ! this.itemStatus[index]
       this.$emit('checkSelect',this.itemStatus)
       this.$forceUpdate()
-      console.log('check')
+      // console.log('shopping list checkSelect')
+    },
+    subAmount(index){
+      if (this.itemInCart[index].amount > 0) this.itemInCart[index].amount -= 1
+      this.$forceUpdate()
+      this.$emit('subAmount',index)
+    },
+    addAmount(index){
+      this.itemInCart[index].amount += 1
+      this.$forceUpdate()
+      this.$emit('addAmount',index)
     }
   },
   activated() {
+    // console.log('shopping list activated', this.count,this.$store.getters.itemCount)
+    if (this.count !== this.$store.getters.itemCount){
+      let _list = new Array(this.$store.getters.itemCount - this.count).fill(true)
+      this.itemStatus.push(..._list)
+    }
+    this.count = this.$store.getters.itemCount
     this.$forceUpdate()
-    console.log('shopping list activated');
+    // console.log('shopping list activated',this.count,this.$store.getters.itemCount)
+    // console.log('shopping list activated',this.$store.getters.itemCount);
   },
 }
 </script>
 
 <style scoped>
+.count-change{
+  border-radius: 50%;
+  /*border: 1px solid black;*/
+  background-color: rgb(238, 238, 238);
+  width: 26px;
+  height: 26px;
+  margin-left: 5px;
+  margin-right: 5px;
+  text-align: center;
+  line-height: 24px;
+}
+
+.shopping-item{
+  padding-bottom: 44px;
+}
+
 .item-check {
   line-height: 110px;
   margin: 5px;
@@ -73,6 +115,7 @@ export default {
 .count {
   position: absolute;
   right: 0;
+  display: flex;
 }
 
 .price {
