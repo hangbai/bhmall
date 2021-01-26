@@ -35,7 +35,7 @@ export default {
   name: "Shopping",
   data() {
     return {
-      isActive: true,
+      isActive: false,
       itemStatus: [],
       payAmount: 0,
       total: 0,

@@ -117,11 +117,6 @@ export default {
         // get detail info
         this.detailInfo = data.detailInfo
         this.detailInfo['detailImage'] = data.detailInfo.detailImage[0].list
-        // get item params
-        this.itemParams = data.itemParams
-        this.itemParams['rule'] = data.itemParams.rule.tables.shift()
-        this.itemParams['info'] = data.itemParams.info.set
-        data.rate.list ? this.rate = data.rate.list.slice(-1)[0] : this.rate = {}
         // get itemToCart
         this.itemToCart['iid'] = data.itemInfo.iid
         this.itemToCart['title'] = data.itemInfo.title
@@ -130,6 +125,11 @@ export default {
         this.itemToCart['newPrice'] = data.itemInfo.lowNowPrice
         this.itemToCart['amount'] = 1
         this.itemToCart['status'] = true
+        // get item params
+        this.itemParams = data.itemParams
+        this.itemParams['rule'] = data.itemParams.rule.tables.shift()
+        this.itemParams['info'] = data.itemParams.info.set
+        data.rate.list ? this.rate = data.rate.list.slice(-1)[0] : this.rate = {}
       })
     },
     getRecommend() {
