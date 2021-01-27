@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     back() {
-      this.$router.push('/')
+      this.$router.go(-1)
     },
     onScroll(num) {
       this.pos.tab = num
